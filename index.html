@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Display a map</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.1/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.1/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+<body>
+
+<div id='map'></div>
+<script>
+    mapboxgl.accessToken = 'pk.eyJ1Ijoic2V0aGR1bWFndWluIiwiYSI6ImNqOGJ4Y2NzZDAzYnozNG1vcmt5cDRyd2kifQ.95Kzeq2nhrCrcT-T7KZKIQ';
+    var bounds = [
+        [-122.2711349, 37.8726109], // Southwest coordinates
+        [-122.2598612, 16.03]  // Northeast coordinates
+    ];
+    var map = new mapboxgl.Map({
+        container: 'map', // container id
+        style: 'mapbox://styles/sethdumaguin/cjuhkq6g75i891fppfozyjyf5', // stylesheet location
+        center: [-122.26, 37.87], // starting position [lng, lat]
+        zoom: 15 // starting zoom
+    });
+
+    map.on('load', function() {
+        // Add a geojson point source.
+        // Heatmap layers also work with a vector tile source.
+         
+        map.addLayer({
+            "id": "crimes-heat",
+            "type": "heatmap",
+            "source": "dataset-1sgi0h",
+            "maxzoom": 20,
+            "paint": {
+            // Increase the heatmap weight based on frequency and property magnitude
+            "heatmap-weight": [
+                "interpolate",
+                ["linear"],
+                ["get", "Score"],
+                0, 0,
+                6, 1
+            ],
+            // Increase the heatmap color weight weight by zoom level
+            // heatmap-intensity is a multiplier on top of heatmap-weight
+            "heatmap-intensity": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                0, 1,
+                9, 3
+            ],
+            // Color ramp for heatmap.  Domain is 0 (low) to 1 (high).
+            // Begin color ramp at 0-stop with a 0-transparancy color
+            // to create a blur-like effect.
+            "heatmap-color": [
+                "interpolate",
+                ["linear"],
+                ["heatmap-density"],
+                0, "rgba(33,102,172,0)",
+                0.2, "rgb(103,169,207)",
+                0.4, "rgb(209,229,240)",
+                0.6, "rgb(253,219,199)",
+                0.8, "rgb(239,138,98)",
+                1, "rgb(178,24,43)"
+            ],
+            // Adjust the heatmap radius by zoom level
+            "heatmap-radius": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                0, 2,
+                9, 20
+            ],
+            // Transition from heatmap to circle layer by zoom level
+            "heatmap-opacity": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                7, 1,
+                9, 0
+            ],
+            }
+        });
+         
+        map.addLayer({
+            "id": "earthquakes-point",
+            "type": "circle",
+            "source": "crimes",
+            "minzoom": 7,
+            "paint": {
+            // Size circle radius by earthquake magnitude and zoom level
+                "circle-radius": [
+                    "interpolate",
+                    ["linear"],
+                    ["zoom"],
+                    7, [
+                    "interpolate",
+                    ["linear"],
+                    ["get", "Score"],
+                    1, 1,
+                    6, 4
+                    ],
+                    16, [
+                    "interpolate",
+                    ["linear"],
+                    ["get", "Score"],
+                    1, 5,
+                    6, 50
+                    ]
+                ],
+                // Color circle by earthquake magnitude
+                "circle-color": [
+                "interpolate",
+                ["linear"],
+                ["get", "Score"],
+                1, "rgba(33,102,172,0)",
+                2, "rgb(103,169,207)",
+                3, "rgb(209,229,240)",
+                4, "rgb(253,219,199)",
+                5, "rgb(239,138,98)",
+                6, "rgb(178,24,43)"
+                ],
+                "circle-stroke-color": "white",
+                "circle-stroke-width": 1,
+                // Transition from heatmap to circle layer by zoom level
+                "circle-opacity": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                7, 0,
+                8, 1
+                ]
+            }
+        });
+});
+</script>
+
+</body>
+</html>
