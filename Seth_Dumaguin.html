@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8' />
+  <title>Display a map</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script>
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    h2,
+    h3 {
+      margin: 10px;
+      font-size: 1.2em;
+    }
+
+    h3 {
+      font-size: 1em;
+    }
+
+    p {
+      font-size: 0.85em;
+      margin: 10px;
+      text-align: left;
+    }
+
+    /**
+    * Create a position for the map
+    * on the page */
+    #map {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+    }
+
+    /**
+    * Set rules for how the map overlays
+    * (information box and legend) will be displayed
+    * on the page. */
+    .map-overlay {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.8);
+      margin-right: 20px;
+      font-family: Arial, sans-serif;
+      overflow: auto;
+      border-radius: 3px;
+    }
+
+    #features {
+      top: 0;
+      height: 140px;
+      margin-top: 20px;
+      width: 250px;
+    }
+
+    #legend {
+      padding: 10px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      line-height: 18px;
+      height: 160px;
+      margin-bottom: 40px;
+      width: 120px;
+    }
+
+    .legend-key {
+      display: inline-block;
+      border-radius: 20%;
+      width: 10px;
+      height: 10px;
+      margin-right: 5px;
+    }
+
+    #lamp {
+        height: 25px;
+        width: 25px;
+        background-color: #f6f465;
+        border-radius: 50%;
+    }
+
+    #outer-circle {
+    top: 10px;
+    background: #4169e1;
+    border-radius: 100%;
+    height: 18px;
+    width: 18px;
+    position: relative;
+    box-shadow: 0 0 0 5px #ff0000;
+    margin:15px;
+    }
+
+
+    .left {
+        float: left; 
+        width: 50%;
+    }
+
+    .right {
+        float: right; width: 50%;
+        z-index: 1;
+    }
+
+    .splash {
+        z-index: 1;
+        background-image: url("https://www.ischool.berkeley.edu/sites/all/themes/custom/i_school/images/homepage_hero/1_campanile_at_night.jpg");
+    }
+
+  </style>
+</head>
+<body>
+
+<div id='map'></div>
+<div class='map-overlay' id='features'><h2>Types of Crime</h2><div id='pd'><p>Hover over a Crime Scene</p></div></div>
+<div class='map-overlay' id='legend'>
+    <h2>Legend</h2>
+    <div class="left">
+        <p id="lamp"></p>
+        <div id="outer-circle"></div>
+    </div>
+    <div class="right">
+        <p>Street Lamp</p>
+        <p>Crime Scene</p>
+    </div>
+</div>
+
+
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1Ijoic2V0aGR1bWFndWluIiwiYSI6ImNqOGJ4Y2NzZDAzYnozNG1vcmt5cDRyd2kifQ.95Kzeq2nhrCrcT-T7KZKIQ';
+const map = new mapboxgl.Map({
+  container: 'map',
+  style: 'mapbox://styles/sethdumaguin/cjuirdi8q6lxh1fn1277jgnrc',
+  center: [-122.259716, 37.870639],
+  zoom: 14.7
+});
+
+map.on('load', function() {
+      map.on('mousemove', function(e) {
+      var crime = map.queryRenderedFeatures(e.point, {
+        layers: ['dataset-1sgi0h (1)']
+      });
+
+      if (crime.length > 0) {
+        console.log('Hello');
+        document.getElementById('pd').innerHTML = '<h3><strong>' + crime[0].properties.BLKADDR + '</strong></h3><p><strong><em>' + crime[0].properties.CVLEGEND;
+      } else {
+        document.getElementById('pd').innerHTML = '<p>Hover a Crime Scene</p>';
+      }
+    });
+});
+
+map.getCanvas().style.cursor = 'default';
+
+map.addControl(new mapboxgl.NavigationControl());
+</script>
+
+</body>
+</html>
