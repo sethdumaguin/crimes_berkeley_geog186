@@ -107,14 +107,39 @@
     }
 
     .splash {
-        z-index: 1;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index:99;        
         background-image: url("https://www.ischool.berkeley.edu/sites/all/themes/custom/i_school/images/homepage_hero/1_campanile_at_night.jpg");
     }
+
+
+    .center-screen {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      min-height: 100vh;
+  }
+
 
   </style>
 </head>
 <body>
 
+<div class="splash">
+  <div class="center-screen">
+    <h2 style="font-size: 75px; color: #FDB515">
+      Crimes Around <br>
+      UC Berkeley
+    </h2>
+    <button type="button" class="button">Let's Go to the Map!</button>
+  </div>
+</div>
 <div id='map'></div>
 <div class='map-overlay' id='features'><h2>Types of Crime</h2><div id='pd'><p>Hover over a Crime Scene</p></div></div>
 <div class='map-overlay' id='legend'>
@@ -130,8 +155,15 @@
 </div>
 
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
 <script>
+$(document).ready(function(){
+  $("button").click(function(){
+    $(".splash").remove();
+  });
+});
+
 mapboxgl.accessToken = 'pk.eyJ1Ijoic2V0aGR1bWFndWluIiwiYSI6ImNqOGJ4Y2NzZDAzYnozNG1vcmt5cDRyd2kifQ.95Kzeq2nhrCrcT-T7KZKIQ';
 const map = new mapboxgl.Map({
   container: 'map',
